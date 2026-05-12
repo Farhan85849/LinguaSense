@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: linguasense_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: linguasense
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: linguasense_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: mysql+pymysql://root:${MYSQL_ROOT_PASSWORD:-rootpassword}@db:3306/linguasense
+      SECRET_KEY: ${SECRET_KEY:-change-this-secret-key-in-production}
+      FRONTEND_URL: http://localhost:5173
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./ai_models:/app/ai_models
+
+  frontend:
+    build: ./frontend
+    container_name: linguasense_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:

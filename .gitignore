@@ -1,0 +1,36 @@
+# Environment files
+.env
+.env.local
+.env.production
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Trained model binaries (large files)
+ai_models/*.pkl
+
+# Node
+node_modules/
+frontend/node_modules/
+
+# Build output
+frontend/dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
